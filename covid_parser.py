@@ -7,6 +7,7 @@ import json
 
 aus_locations = {'aus': 1, 'nsw': 1, 'vic': 2, 'qld': 3, 'sa': 4, 'wa': 5, 'tas': 6, 'nt': 7, 'act': 8}
 supported_data_types = ['cases', 'deaths']
+aus_states = {'nsw': 2, 'vic': 0, 'qld': 4, 'sa': 6, 'wa': 7, 'tas': 8, 'nt': 9, 'act': 10}
 
 
 def rreplace(s, old, new, occurrence):
@@ -35,13 +36,20 @@ def get_state_new(data_type='cases'):
         data = data.replace(r'\u002f', '/')
         statedata = json.loads(data)
         return statedata
-    # elif data_type == 'recoveries':
-    #     data = download_data(r'https://e.infogram.com/_/1x9ogDI1RFHnyzW4sfFx?live')
-    #     junk, vic = data.split('c19","chart_type_nr":1,"data":[')
-    #     vic, junk = data.split(r',[["Date","Cases","Recoveries"],["01\u002F03","2",""],["02\u002F03","0",""]')
-    #     vic = vic.replace(r'\u002f', '/')
-    #     statedata = json.loads(data)
-    #     return statedata
+    elif data_type == 'recoveries':
+        data = download_data(r'https://e.infogram.com/_/1x9ogDI1RFHnyzW4sfFx?live')
+        junk, data = data.split(r'c19","chart_type_nr":1,"data":', 1)
+        data, junk = data.split(r',"custom":{"showPoints":true,"', 1)
+        data = data.replace(r'\u002F', '/')
+        print(data)
+        data = json.loads(data)
+        statedata = list()
+        for i in range(1, len(data[aus_states['nsw']])):
+            tmp = [data[aus_states['nsw']][i][0], data[aus_states['nsw']][i][2], data[aus_states['vic']][i][2],
+                   data[aus_states['qld']][i][2], data[aus_states['sa']][i][2], data[aus_states['wa']][i][2],
+                   data[aus_states['tas']][i][2], data[aus_states['nt']][i][2], data[aus_states['act']][i][2]]
+            statedata.append(tmp)
+        return statedata
 
 
 def get_aus_new(data_type='cases'):
@@ -134,3 +142,7 @@ def new(location='aus', data_type='cases'):
             except urllib.error.HTTPError:
                 parsed_data = "unsupportedLocation"
         return parsed_data
+
+
+# def total(location='aus', data_type='cases'):
+#     print(location)
