@@ -34,6 +34,13 @@ def get_state_new(data_type='cases'):
         data = data.replace(r'\u002f', '/')
         statedata = json.loads(data)
         return statedata
+    # elif data_type == 'recoveries':
+    #     data = download_data(r'https://e.infogram.com/_/1x9ogDI1RFHnyzW4sfFx?live')
+    #     junk, vic = data.split('c19","chart_type_nr":1,"data":[')
+    #     vic, junk = data.split(r',[["Date","Cases","Recoveries"],["01\u002F03","2",""],["02\u002F03","0",""]')
+    #     vic = vic.replace(r'\u002f', '/')
+    #     statedata = json.loads(data)
+    #     return statedata
 
 
 def get_aus_new(data_type='cases'):
