@@ -10,9 +10,9 @@ supported_data_types = ['cases', 'deaths', 'recoveries']
 aus_states = {'nsw': 2, 'vic': 0, 'qld': 4, 'sa': 6, 'wa': 7, 'tas': 8, 'nt': 9, 'act': 10}
 
 
-def rreplace(s, old, new, occurrence):
+def rreplace(s, old, _new, occurrence):
     li = s.rsplit(old, occurrence)
-    return new.join(li)
+    return _new.join(li)
 
 
 def download_data(url):
@@ -41,7 +41,6 @@ def get_state_new(data_type='cases'):
         junk, data = data.split(r'c19","chart_type_nr":1,"data":', 1)
         data, junk = data.split(r',"custom":{"showPoints":true,"', 1)
         data = data.replace(r'\u002F', '/')
-        print(data)
         data = json.loads(data)
         statedata = list()
         for i in range(1, len(data[aus_states['nsw']])):
@@ -66,6 +65,25 @@ def get_aus_new(data_type='cases'):
         data, junk = data.split('],"custom":{"showPoints":false')
         data = data.replace(r'\u002F', '/')
         ausdata = json.loads(data)
+        return ausdata
+    elif data_type == 'recoveries':
+        data = download_data(r'https://e.infogram.com/_/1x9ogDI1RFHnyzW4sfFx?live')
+        junk, data = data.split(r'c19","chart_type_nr":1,"data":', 1)
+        data, junk = data.split(r',"custom":{"showPoints":true,"', 1)
+        data = data.replace(r'\u002F', '/')
+        data = data.replace('""', '"0"')
+        data = json.loads(data)
+        ausdata = list()
+        for i in range(1, len(data[aus_states['nsw']])):
+            tmp = [data[aus_states['nsw']][i][0], int(data[aus_states['nsw']][i][2].replace(',', '')) +
+                   int(data[aus_states['vic']][i][2].replace(',', '')) +
+                   int(data[aus_states['qld']][i][2].replace(',', '')) +
+                   int(data[aus_states['sa']][i][2].replace(',', '')) +
+                   int(data[aus_states['wa']][i][2].replace(',', '')) +
+                   int(data[aus_states['tas']][i][2].replace(',', '')) +
+                   int(data[aus_states['nt']][i][2].replace(',', '')) +
+                   int(data[aus_states['act']][i][2].replace(',', ''))]
+            ausdata.append(tmp)
         return ausdata
 
 
@@ -131,8 +149,6 @@ def new(location='aus', data_type='cases'):
     else:
         if location in aus_locations:
             if location == 'aus':
-                if data_type == 'recoveries':
-                    return "unsupportedDataType"
                 data = get_aus_new(data_type=data_type)
             else:
                 data = get_state_new(data_type=data_type)
