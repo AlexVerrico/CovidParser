@@ -131,12 +131,16 @@ def new(location='aus', data_type='cases'):
     else:
         if location in aus_locations:
             if location == 'aus':
+                if data_type == 'recoveries':
+                    return "unsupportedDataType"
                 data = get_aus_new(data_type=data_type)
             else:
                 data = get_state_new(data_type=data_type)
             parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
         else:
             try:
+                if data_type == 'recoveries':
+                    return "unsupportedDataType"
                 data = get_country_new(location, data_type=data_type)
                 parsed_data = [data[-1], data[-2]]
             except urllib.error.HTTPError:
@@ -146,3 +150,5 @@ def new(location='aus', data_type='cases'):
 
 # def total(location='aus', data_type='cases'):
 #     print(location)
+
+# print(new(data_type='recoveries', location='aus'))
