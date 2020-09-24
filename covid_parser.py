@@ -89,8 +89,11 @@ def new_cases(location='aus'):
         data = get_country_new('usa')
         parsed_data = [data[-1], data[-2]]
     else:
-        data = get_country_new(location)
-        parsed_data = [data[-1], data[-2]]
+        try:
+            data = get_country_new(location)
+            parsed_data = [data[-1], data[-2]]
+        except urllib.error.HTTPError:
+            parsed_data = "unsupportedLocation"
     return parsed_data
 
 
@@ -105,6 +108,12 @@ def new_deaths(location='aus'):
         data = get_country_new('usa', data_type='deaths')
         parsed_data = [data[-1], data[-2]]
     else:
-        data = get_country_new(location)
-        parsed_data = [data[-1], data[-2]]
+        try:
+            data = get_country_new(location)
+            parsed_data = [data[-1], data[-2]]
+        except urllib.error.HTTPError:
+            parsed_data = "unsupportedLocation"
     return parsed_data
+
+
+print(new_cases('yvkuvk'))
