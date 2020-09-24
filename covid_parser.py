@@ -114,6 +114,3 @@ def new_deaths(location='aus'):
         except urllib.error.HTTPError:
             parsed_data = "unsupportedLocation"
     return parsed_data
-
-
-print(new_cases('yvkuvk'))
