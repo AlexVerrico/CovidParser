@@ -103,6 +103,13 @@ def get_country_new(country='australia', data_type='cases'):
         data = rreplace(data, ',', '', 1)
         countrydata = json.loads(data)
         return countrydata
+    elif data_type == 'recoveries':
+        junk, data = data.split('const recovered_new = ')
+        data, junk = data.split('const current_infected = ')
+        data = data.replace("'", '"')
+        data = rreplace(data, ',', '', 1)
+        countrydata = json.loads(data)
+        return countrydata
 
 
 def new_cases(location='aus'):  # Depreciated, use new(location=location, data_type='cases')
@@ -155,8 +162,6 @@ def new(location='aus', data_type='cases'):
             parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
         else:
             try:
-                if data_type == 'recoveries':
-                    return "unsupportedDataType"
                 data = get_country_new(location, data_type=data_type)
                 parsed_data = [data[-1], data[-2]]
             except urllib.error.HTTPError:
@@ -167,4 +172,4 @@ def new(location='aus', data_type='cases'):
 # def total(location='aus', data_type='cases'):
 #     print(location)
 
-# print(new(data_type='recoveries', location='aus'))
+# print(new(data_type='recoveries', location='china'))
