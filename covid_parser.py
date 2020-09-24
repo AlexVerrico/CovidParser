@@ -75,14 +75,14 @@ def get_aus_new(data_type='cases'):
         data = json.loads(data)
         ausdata = list()
         for i in range(1, len(data[aus_states['nsw']])):
-            tmp = [data[aus_states['nsw']][i][0], int(data[aus_states['nsw']][i][2].replace(',', '')) +
+            tmp = [data[aus_states['nsw']][i][0], str(int(data[aus_states['nsw']][i][2].replace(',', '')) +
                    int(data[aus_states['vic']][i][2].replace(',', '')) +
                    int(data[aus_states['qld']][i][2].replace(',', '')) +
                    int(data[aus_states['sa']][i][2].replace(',', '')) +
                    int(data[aus_states['wa']][i][2].replace(',', '')) +
                    int(data[aus_states['tas']][i][2].replace(',', '')) +
                    int(data[aus_states['nt']][i][2].replace(',', '')) +
-                   int(data[aus_states['act']][i][2].replace(',', ''))]
+                   int(data[aus_states['act']][i][2].replace(',', '')))]
             ausdata.append(tmp)
         return ausdata
 
