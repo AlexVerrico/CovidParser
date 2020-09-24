@@ -6,6 +6,7 @@ import json
 
 
 aus_locations = {'aus': 1, 'nsw': 1, 'vic': 2, 'qld': 3, 'sa': 4, 'wa': 5, 'tas': 6, 'nt': 7, 'act': 8}
+supported_data_types = ['cases', 'deaths']
 
 
 def rreplace(s, old, new, occurrence):
@@ -78,7 +79,7 @@ def get_country_new(country='australia', data_type='cases'):
         return countrydata
 
 
-def new_cases(location='aus'):
+def new_cases(location='aus'):  # Depreciated, use new(location=location, data_type='cases')
     if location in aus_locations:
         if location == 'aus':
             data = get_aus_new()
@@ -97,7 +98,7 @@ def new_cases(location='aus'):
     return parsed_data
 
 
-def new_deaths(location='aus'):
+def new_deaths(location='aus'):  # Depreciated, use new(location=location, data_type='cases')
     if location in aus_locations:
         if location == 'aus':
             data = get_aus_new(data_type='deaths')
@@ -114,3 +115,22 @@ def new_deaths(location='aus'):
         except urllib.error.HTTPError:
             parsed_data = "unsupportedLocation"
     return parsed_data
+
+
+def new(location='aus', data_type='cases'):
+    if data_type not in supported_data_types:
+        return "unsupportedDataType"
+    else:
+        if location in aus_locations:
+            if location == 'aus':
+                data = get_aus_new(data_type=data_type)
+            else:
+                data = get_state_new(data_type=data_type)
+            parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
+        else:
+            try:
+                data = get_country_new(location, data_type=data_type)
+                parsed_data = [data[-1], data[-2]]
+            except urllib.error.HTTPError:
+                parsed_data = "unsupportedLocation"
+        return parsed_data
