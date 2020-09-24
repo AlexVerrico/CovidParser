@@ -6,7 +6,7 @@ import json
 
 
 aus_locations = {'aus': 1, 'nsw': 1, 'vic': 2, 'qld': 3, 'sa': 4, 'wa': 5, 'tas': 6, 'nt': 7, 'act': 8}
-supported_data_types = ['cases', 'deaths']
+supported_data_types = ['cases', 'deaths', 'recoveries']
 aus_states = {'nsw': 2, 'vic': 0, 'qld': 4, 'sa': 6, 'wa': 7, 'tas': 8, 'nt': 9, 'act': 10}
 
 
