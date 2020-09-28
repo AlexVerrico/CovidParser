@@ -241,4 +241,4 @@ def new(location='aus', data_type='cases'):
 # def total(location='aus', data_type='cases'):
 #     print(location)
 
-print(new(data_type='recoveries', location='nsw'))
+# print(new(data_type='recoveries', location='nsw'))
