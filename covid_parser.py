@@ -7,6 +7,7 @@ import json
 
 aus_locations = {'aus': 1, 'nsw': 1, 'vic': 2, 'qld': 3, 'sa': 4, 'wa': 5, 'tas': 6, 'nt': 7, 'act': 8}
 aus_states = {'nsw': 1, 'vic': 2, 'qld': 3, 'sa': 4, 'wa': 5, 'tas': 6, 'nt': 7, 'act': 8}
+ausStates = {'nsw': 2, 'vic': 0, 'qld': 4, 'sa': 6, 'wa': 7, 'tas': 8, 'nt': 9, 'act': 10}
 supported_data_types = ['cases', 'deaths', 'recoveries']
 
 
@@ -36,7 +37,7 @@ def get_state_new(data_type='cases'):
         data = data.replace(r'\u002f', '/')
         statedata = json.loads(data)
         return statedata
-    elif data_type == 'recoveries':
+    # elif data_type == 'recoveries':
         # data = download_data(r'https://e.infogram.com/_/1x9ogDI1RFHnyzW4sfFx')
         # junk, data = data.split(r'c19","chart_type_nr":1,"data":', 1)
         # data, junk = data.split(r',"custom":{"showPoints":true,"', 1)
@@ -81,24 +82,46 @@ def get_state_new(data_type='cases'):
         #     print(tmp)
         #     statedata.append(tmp)
 
-        vicdata = download_data(r'https://www.dhhs.vic.gov.au/victorian-coronavirus-covid-19-data')
-        junk, vicdata = vicdata.split("""<div class="lvn-body">
-    		<div class="row">
-    			<div class="col-xs-6 col-sm-3">
-    				<div class="lvn-box lvn-box-top">""")
-        vicdata, junk = vicdata.split("""</div>
-    				<div class="lvn-box lvn-box-bottom">
-    					<h4>782</h4>
-    					<p>total lives lost</p>
-    				</div>
-    			</div>
-    			<div class="col-xs-6 col-sm-3">""")
-        vicdata = vicdata.replace('\t', '')
-        vicdata = vicdata.split('\n')
-        print(vicdata)
-        # vicdata = vicdata[]
+        # vicdata = download_data(r'https://www.dhhs.vic.gov.au/victorian-coronavirus-covid-19-data')
+        # junk, vicdata = vicdata.split("""<div class="lvn-body">
+    	# 	<div class="row">
+    	# 		<div class="col-xs-6 col-sm-3">
+    	# 			<div class="lvn-box lvn-box-top">""")
+        # vicdata, junk = vicdata.split("""</div>
+    	# 			<div class="lvn-box lvn-box-bottom">
+    	# 				<h4>782</h4>
+    	# 				<p>total lives lost</p>
+    	# 			</div>
+    	# 		</div>
+    	# 		<div class="col-xs-6 col-sm-3">""")
+        # vicdata = vicdata.replace('\t', '')
+        # vicdata = vicdata.split('\n')
+        # print(vicdata)
+        # # return statedata
 
-        # return statedata
+
+def get_state_new_v2(data_type='cases', location='vic'):
+    data = download_data(r"https://atlas.jifo.co/api/connectors/0b334273-5661-4837-a639-e3a384d81d20")
+    data = json.loads(data)
+    data = data["data"]
+    if data_type == 'cases':
+        data = data[8]
+        return data
+    if data_type == 'deaths':
+        data = data[15]
+        return data
+    if data_type == 'recoveries':
+        data1 = download_data(r'https://atlas.jifo.co/api/connectors/f3401355-a94b-4360-a1f8-1f23478840ad')
+        data1 = json.loads(data1)
+        statedata = list()
+        for i in range(1, len(data1["data"][0])):
+            tmp1 = list()
+            tmp1.append('')
+            for loc in ausStates:
+                tmp = data1["data"][ausStates[loc]][i][2]
+                tmp1.append(tmp)
+            statedata.append(tmp1)
+        return statedata
 
 
 def get_aus_new(data_type='cases'):
@@ -117,23 +140,6 @@ def get_aus_new(data_type='cases'):
         ausdata = json.loads(data)
         return ausdata
     elif data_type == 'recoveries':
-        # data = download_data(r'https://e.infogram.com/_/1x9ogDI1RFHnyzW4sfFx?live')
-        # junk, data = data.split(r'c19","chart_type_nr":1,"data":', 1)
-        # data, junk = data.split(r',"custom":{"showPoints":true,"', 1)
-        # data = data.replace(r'\u002F', '/')
-        # data = data.replace('""', '"0"')
-        # data = json.loads(data)
-        # ausdata = list()
-        # for i in range(1, len(data[aus_states['nsw']])):
-        #     tmp = [data[aus_states['nsw']][i][0], str(int(data[aus_states['nsw']][i][2].replace(',', '')) +
-        #            int(data[aus_states['vic']][i][2].replace(',', '')) +
-        #            int(data[aus_states['qld']][i][2].replace(',', '')) +
-        #            int(data[aus_states['sa']][i][2].replace(',', '')) +
-        #            int(data[aus_states['wa']][i][2].replace(',', '')) +
-        #            int(data[aus_states['tas']][i][2].replace(',', '')) +
-        #            int(data[aus_states['nt']][i][2].replace(',', '')) +
-        #            int(data[aus_states['act']][i][2].replace(',', '')))]
-        #     ausdata.append(tmp)
         ausdata = get_country_new('australia', data_type='recoveries')
         # print(ausdata)
         return ausdata
@@ -169,7 +175,7 @@ def new_cases(location='aus'):  # Depreciated, use new(location=location, data_t
         if location == 'aus':
             data = get_aus_new()
         else:
-            data = get_state_new()
+            data = get_state_new_v2(data_type='cases')
         parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
     elif location == 'usa':
         data = get_country_new('usa')
@@ -188,7 +194,8 @@ def new_deaths(location='aus'):  # Depreciated, use new(location=location, data_
         if location == 'aus':
             data = get_aus_new(data_type='deaths')
         else:
-            data = get_state_new(data_type='deaths')
+            data = get_state_new_v2(data_type='deaths')
+            print(data[-1])
         parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
     elif location == 'usa':
         data = get_country_new('usa', data_type='deaths')
@@ -216,10 +223,10 @@ def new(location='aus', data_type='cases'):
                 else:
                     data = get_aus_new(data_type=data_type)
             else:
-                if data_type == 'recoveries':
-                    return "unsupportedDataType"
-                else:
-                    data = get_state_new(data_type=data_type)
+                # if data_type == 'recoveries':
+                #     return "unsupportedDataType"
+                # else:
+                data = get_state_new_v2(data_type=data_type, location=location)
             # print(data)
             parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
         else:
@@ -234,4 +241,4 @@ def new(location='aus', data_type='cases'):
 # def total(location='aus', data_type='cases'):
 #     print(location)
 
-# print(new(data_type='recoveries', location='usa'))
+print(new(data_type='recoveries', location='nsw'))
