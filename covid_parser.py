@@ -209,7 +209,7 @@ def new_deaths(location='aus'):  # Depreciated, use new(location=location, data_
     return parsed_data
 
 
-def new(location='aus', data_type='cases'):
+def new(location='aus', data_type='cases', time='2days'):
     if data_type not in supported_data_types:
         return "unsupportedDataType"
     else:
@@ -218,7 +218,12 @@ def new(location='aus', data_type='cases'):
             if location == 'aus':
                 if data_type == 'recoveries':
                     data = get_country_new('australia', data_type='recoveries')
-                    parsed_data = [data[-1], data[-2]]
+                    if time == '2days':
+                        parsed_data = [data[-1], data[-2]]
+                    else:
+                        parsed_data = list()
+                        for i in range(1, len(data) + 1):
+                            parsed_data.append(data[-i])
                     return parsed_data
                 else:
                     data = get_aus_new(data_type=data_type)
@@ -228,7 +233,12 @@ def new(location='aus', data_type='cases'):
                 # else:
                 data = get_state_new_v2(data_type=data_type, location=location)
             # print(data)
-            parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
+            if time == '2days':
+                parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
+            else:
+                parsed_data = list()
+                for i in range(1, len(data)):
+                    parsed_data.append(data[-i][aus_locations[location]])
         else:
             try:
                 data = get_country_new(location, data_type=data_type)
