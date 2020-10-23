@@ -248,7 +248,13 @@ def new(location='aus', data_type='cases', time='2days'):
         return parsed_data
 
 
-# def total(location='aus', data_type='cases'):
-#     print(location)
+def total(location='global', data_type='cases'):
+    if data_type == 'cases':
+        if location == 'global':
+            data = download_data(r'https://covid19statistics.org')
+            trash, data = data.split('<p class="card-text">Cases: ')
+            data, trash = data.split('</p>', 1)
+            return data
 
-# print(new(data_type='recoveries', location='nsw'))
+
+# print(total(data_type='cases', location='global'))
