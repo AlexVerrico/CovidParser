@@ -235,8 +235,12 @@ def new(location='aus', data_type='cases', time='2days'):
             # print(data)
             if time == '2days':
                 parsed_data = [data[-1][aus_locations[location]], data[-2][aus_locations[location]]]
+            elif time == '14days':
+                parsed_data = []
+                for i in range(1, 15):
+                    parsed_data.append(int(data[-i][aus_locations[location]]))
             else:
-                parsed_data = list()
+                parsed_data = []
                 for i in range(1, len(data)):
                     parsed_data.append(data[-i][aus_locations[location]])
         else:
