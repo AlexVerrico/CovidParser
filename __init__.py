@@ -103,7 +103,7 @@ class CovidParser:
         # Open the file in append mode
         with open(self.log_file, 'a') as f:
             # Write the data
-            f.write(data)
+            f.write(f'{data}\n\n')
         return
 
     # Function to replace X number of occurences of a string with
@@ -630,6 +630,9 @@ class CovidParser:
                 out_full['content'] = "Unrecognised location"
                 out_full['classified'] = 0
                 return out_full
+
+    def _fetch_data_v3(self, url: str) -> str:
+        return self.__download_data_v3(url)
 
     def new(self, location: str = 'aus', data_type: str = 'cases',
             date_range: DateRangeTypeV3 = None, include_date: bool = False) -> StandardReturnTypeV3:
