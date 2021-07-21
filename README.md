@@ -19,6 +19,7 @@ Please update any relevant documentation
  - V2.0.0 - *If you're wondering where version 2 is, it never made it onto GitHub, but I still named the latest release version 3 to avoid conflicts where version 2 was deployed manually.*
  - V3.0.0 - Major overhaul, also adds CovidParser.total   
    ***Warning: This is not a "drop-in" replacement for V1.0.0.***
+ - V3.0.1 - Add newline to `CovidParser.__log()`, and add `CovidParser._fetch_data_v3()` function.
 
 ## Contributors:
  - [@AlexVerrico](https://github.com/AlexVerrico/)
