@@ -544,7 +544,7 @@ class CovidParser:
 
         else:
             try:
-                out = self.__get_country_new_v3(location=location, data_type=data_type)
+                out = self.__get_country_new_v3(location=location, data_type=data_type, date_range=date_range)
                 if out['classified'] == 0:
                     return out
                 elif out['classified'] == 1:

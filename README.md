@@ -20,6 +20,7 @@ Please update any relevant documentation
  - V3.0.0 - Major overhaul, also adds CovidParser.total   
    ***Warning: This is not a "drop-in" replacement for V1.0.0.***
  - V3.0.1 - Add newline to `CovidParser.__log()`, and add `CovidParser._fetch_data_v3()` function.
+ - V3.0.2 - Fix `CovidParser._new_v3()` to correctly pass date_range to `CovidParser.__get_country_new_v3()`
 
 ## Contributors:
  - [@AlexVerrico](https://github.com/AlexVerrico/)
