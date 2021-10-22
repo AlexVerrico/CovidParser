@@ -21,6 +21,7 @@ Please update any relevant documentation
    ***Warning: This is not a "drop-in" replacement for V1.0.0.***
  - V3.0.1 - Add newline to `CovidParser.__log()`, and add `CovidParser._fetch_data_v3()` function.
  - V3.0.2 - Fix `CovidParser._new_v3()` to correctly pass date_range to `CovidParser.__get_country_new_v3()`
+ - V3.1.0 - Add support for vaccination numbers for Australian locations
 
 ## Contributors:
  - [@AlexVerrico](https://github.com/AlexVerrico/)
