@@ -71,6 +71,21 @@ Normally, any data returned by the module will have a `classified` value of 0, h
 2 = not to be returned to user, not to be logged  
 3 = not to be returned to user, not to be logged, not to be raised in exceptions  
 
+Available data_types:
+- cases
+- deaths
+- recoveries
+- vaccinations (alias for vaccinations-seconddose)
+- vaccinations-seconddose
+- vaccinations-firstdose
+- vaccinations-percent (alias for vaccinations-percent-over16-seconddose)
+- vaccinations-percent-over16-seconddose
+- vaccinations-percent-over16-firstdose
+- vaccinations-percent-over12-seconddose
+- vaccinations-percent-over12-firstdose
+- vaccinations-percent-all-seconddose
+- vaccinations-percent-all-firstdose
+
 The following locations have full support:
 location (full name)
 - aus (Australia)
@@ -83,7 +98,10 @@ location (full name)
 - nt (Northern Territory)
 - act (Australian Capital Territory)
 
-Any other locations that are supported by [https://epidemic-stats.com/coronavirus/country_name](https://epidemic-stats.com/coronavirus/country_name) can be used, however the option `include_date` for `CovidParser.new` will be ignored, and the data will always be returned without the date for each entry.
+Any locations that are supported by [https://epidemic-stats.com/coronavirus/country_name](https://epidemic-stats.com/coronavirus/country_name) can be used, with the following limitations:
+- The option `include_date` for `CovidParser.new` will be ignored
+- The data will always be returned without the date for each entry
+- There is currently no support for vaccination data
 
 It is also possible to access the underlying methods for some functions, however this bypasses any pre-processing, and so more care is required when passing arguments:  
 `CovidParser._new_v3(location, data_type, date_range, include_date)`  
