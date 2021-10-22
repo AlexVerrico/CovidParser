@@ -72,12 +72,19 @@ Normally, any data returned by the module will have a `classified` value of 0, h
 3 = not to be returned to user, not to be logged, not to be raised in exceptions  
 
 Available data_types:
-- Cases
-- Deaths
-- Recoveries
-- Vaccinations (alias for vaccinations-seconddose)
-- Vaccinations-seconddose
-- Vaccinations-firstdose
+- cases
+- deaths
+- recoveries
+- vaccinations (alias for vaccinations-seconddose)
+- vaccinations-seconddose
+- vaccinations-firstdose
+- vaccinations-percent (alias for vaccinations-percent-over16-seconddose)
+- vaccinations-percent-over16-seconddose
+- vaccinations-percent-over16-firstdose
+- vaccinations-percent-over12-seconddose
+- vaccinations-percent-over12-firstdose
+- vaccinations-percent-all-seconddose
+- vaccinations-percent-all-firstdose
 
 The following locations have full support:
 location (full name)
