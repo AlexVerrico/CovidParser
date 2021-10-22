@@ -52,36 +52,52 @@ class CovidParser:
                                    'new_function': self.__get_state_new_v3,
                                    'new_cases_index': 1,  # Index required for part of __get_state_new_v3
                                    'new_deaths_index': 1,  # Index required for part of __get_state_new_v3
-                                   'new_recoveries_index': 1  # Index required for part of __get_state_new_v3
+                                   'new_recoveries_index': 1,  # Index required for part of __get_state_new_v3
+                                   'new_vaccinations_index': 1,  # Index required for part of __get_state_new_v3
+                                   'vaccinations_percent_index': 0  # Index required for part of __get_state_new_v3
                                },
                                'vic': {'new_function': self.__get_state_new_v3,
                                        'new_cases_index': 2,
                                        'new_deaths_index': 2,
-                                       'new_recoveries_index': 2},
+                                       'new_recoveries_index': 2,
+                                       'new_vaccinations_index': 2,
+                                       'vaccinations_percent_index': 1},
                                'qld': {'new_function': self.__get_state_new_v3,
                                        'new_cases_index': 3,
                                        'new_deaths_index': 3,
-                                       'new_recoveries_index': 3},
+                                       'new_recoveries_index': 3,
+                                       'new_vaccinations_index': 3,
+                                       'vaccinations_percent_index': 2},
                                'sa': {'new_function': self.__get_state_new_v3,
                                       'new_cases_index': 4,
                                       'new_deaths_index': 4,
-                                      'new_recoveries_index': 4},
+                                      'new_recoveries_index': 4,
+                                      'new_vaccinations_index': 4,
+                                      'vaccinations_percent_index': 3},
                                'wa': {'new_function': self.__get_state_new_v3,
                                       'new_cases_index': 5,
                                       'new_deaths_index': 5,
-                                      'new_recoveries_index': 5},
+                                      'new_recoveries_index': 5,
+                                      'new_vaccinations_index': 5,
+                                      'vaccinations_percent_index': 4},
                                'tas': {'new_function': self.__get_state_new_v3,
                                        'new_cases_index': 6,
                                        'new_deaths_index': 6,
-                                       'new_recoveries_index': 6},
+                                       'new_recoveries_index': 6,
+                                       'new_vaccinations_index': 6,
+                                       'vaccinations_percent_index': 5},
                                'nt': {'new_function': self.__get_state_new_v3,
                                       'new_cases_index': 7,
                                       'new_deaths_index': 7,
-                                      'new_recoveries_index': 7},
+                                      'new_recoveries_index': 7,
+                                      'new_vaccinations_index': 7,
+                                      'vaccinations_percent_index': 6},
                                'act': {'new_function': self.__get_state_new_v3,
                                        'new_cases_index': 8,
                                        'new_deaths_index': 8,
-                                       'new_recoveries_index': 8}
+                                       'new_recoveries_index': 8,
+                                       'new_vaccinations_index': 8,
+                                       'vaccinations_percent_index': 7}
                                }
 
         # Mapping of long/full location names to their corresponding names in self.__locations_v3
@@ -349,6 +365,115 @@ class CovidParser:
             out_full['content'] = json.dumps(out)
             return out_full
 
+        elif data_type.startswith('vaccinations'):
+            if data_type.startswith('vaccinations-percent'):
+                data = self.__download_data_v3(r'https://atlas.jifo.co/api/connectors/728c45eb-6045-4aa2-9bcc-9d2597424858')
+                data = json.loads(data)['data']
+                if data_type == 'vaccinations-percent-over16-seconddose':
+                    vaccine_type = 0
+                elif data_type == 'vaccinations-percent-over16-firstdose':
+                    vaccine_type = 1
+                elif data_type == 'vaccinations-percent-over12-seconddose':
+                    vaccine_type = 2
+                elif data_type == 'vaccinations-percent-over12-firstdose':
+                    vaccine_type = 3
+                elif data_type == 'vaccinations-percent-all-seconddose':
+                    vaccine_type = 4
+                elif data_type == 'vaccinations-percent-all-firstdose':
+                    vaccine_type = 5
+                else:
+                    vaccine_type = 0
+
+                out = data[vaccine_type][self.__locations_v3[location]['vaccinations_percent_index']][1]
+                out_full['content'] = json.dumps(out)
+                return out_full
+            else:
+                out = []
+                # Get the correct data and load it
+                data = self.__download_data_v3(r'https://atlas.jifo.co/api/connectors/ba5a3a2a-82ef-4225-b054-27227066c0c0')
+                if data_type == 'vaccinations' or data_type == 'vaccinations-seconddose':
+                    data = json.loads(data)['data'][0]
+                elif data_type == 'vaccinations-firstdvose':
+                    data = json.loads(data)['data'][2]
+                else:
+                    data = json.loads(data)['data'][0]
+                # If the call requested more values that what are available, return the maximum available
+                if date_range['type'] == 'days':
+                    if date_range['value'] > len(data) - 1:
+                        date_range['value'] = len(data) - 2
+                    i = 0
+                    x = 0
+                    # While we don't have the requested amount of output
+                    while x < date_range['value']:
+                        # If the current entry in the input is empty, then we skip it
+                        if data[int('-{}'.format(str(i + 1)))][0] == "" or data[int('-{}'.format(str(i + 1)))][0] == " ":
+                            i = i + 1
+                            continue
+                        x = x + 1
+                        # Append the correct data format to the output, depending on the value of _include_data
+                        if include_date is True:
+                            # This part is a little more complicated for recoveries than it is for cases or deaths
+                            try:
+                                out.append(
+                                    # Date
+                                    [data[int('-{}'.format(str(i + 1)))][0],
+                                     # Total recoveries in the current entry
+                                     str(int(data[int('-{}'.format(str(i + 1)))]
+                                             [self.__locations_v3[location]['new_vaccinations_index']]) -
+                                         # Minus the previous entry (one closer to the start of the input)
+                                         int(data[int('-{}'.format(str(i + 2)))]
+                                             [self.__locations_v3[location]['new_vaccinations_index']]))])
+                            except ValueError:
+                                self.print("valueError")
+                                out.append([
+                                    data[int('-{}'.format(str(i + 1)))]
+                                        [self.__locations_v3[location]['new_vaccinations_index']], ''])
+                        else:
+                            try:
+                                out.append(
+                                    str(int(data[int('-{}'.format(str(i + 1)))]
+                                            [self.__locations_v3[location]['new_vaccinations_index']]) -
+                                        int(data[int('-{}'.format(str(i + 2)))]
+                                            [self.__locations_v3[location]['new_vaccinations_index']])))
+                            except ValueError:
+                                self.print("valueError")
+                                out.append('')
+                        i = i + 1
+                # If the date_range is all, then reverse the entire input and return it
+                elif date_range['type'] == 'all':
+                    for i in range(0, len(data) - 2):
+                        if include_date is True:
+                            try:
+                                out.append([
+                                    data[int('-{}'.format(str(i + 1)))]
+                                    [self.__locations_v3[location]['new_vaccinations_index']],
+                                    str(int(data[int('-{}'.format(str(i + 1)))]
+                                            [self.__locations_v3[location]['new_vaccinations_index']]) -
+                                        int(data[int('-{}'.format(str(i + 2)))]
+                                            [self.__locations_v3[location]['new_vaccinations_index']]))])
+                            except ValueError:
+                                self.print("valueError")
+                                out.append([
+                                    data[int('-{}'.format(str(i + 1)))]
+                                    [self.__locations_v3[location]['new_vaccinations_index']], ''])
+                        else:
+                            try:
+                                out.append(
+                                    str(int(data[int('-{}'.format(str(i + 1)))]
+                                            [self.__locations_v3[location]['new_vaccinations_index']]) -
+                                        int(data[int('-{}'.format(str(i + 2)))]
+                                            [self.__locations_v3[location]['new_vaccinations_index']])))
+                            except ValueError:
+                                self.print("valueError")
+                                out.append('')
+                else:
+                    self.print(f"Unsupported date_range type in CovidParser.__get_state_new_v3(date_range={date_range})")
+                    out_full['status'] = 'error'
+                    out_full['content'] = 'Unsupported date_range'
+                    return out_full
+                out_full['content'] = json.dumps(out)
+                return out_full
+
         # If the data_type isn't cases, deaths, or recoveries, log and return an error
         else:
             self.print(f"Unsupported data_type type in CovidParser.__get_state_new_v3(data_type={data_type})")
@@ -468,6 +593,77 @@ class CovidParser:
                 return out_full
             out_full['content'] = json.dumps(out)
             return out_full
+
+        elif data_type.startswith('vaccinations'):
+            if data_type.startswith('vaccinations-percent'):
+                data = self.__download_data_v3(r'https://atlas.jifo.co/api/connectors/08ca8032-69d9-40c1-9bfe-b5610e768295')
+                data = json.loads(data)['data']
+                if data_type.startswith('vaccinations-percent-over16'):
+                    vaccine_age = 0
+                elif data_type.startswith('vaccinations-percent-over12'):
+                    vaccine_age = 1
+                elif data_type.startswith('vaccinations-percent-all'):
+                    vaccine_age = 2
+                else:
+                    vaccine_age = 0
+
+                if data_type.endswith('-seconddose'):
+                    vaccine_type = 1
+                elif data_type.endswith('-firstdose'):
+                    vaccine_type = 2
+                else:
+                    vaccine_type = 1
+
+                out = data[vaccine_age][1][vaccine_type]
+                out_full['content'] = json.dumps(out)
+                return out_full
+
+            else:
+                out = []
+                data = self.__download_data_v3(r'https://atlas.jifo.co/api/connectors/075c0786-674c-482b-91da-06fde61d025c')
+                data = json.loads(data)['data'][0]
+                if data_type == 'vaccinations' or data_type == 'vaccinations-seconddose':
+                    vaccine_type = 2
+                elif data_type == 'vaccinations-firstdose':
+                    vaccine_type = 1
+                else:
+                    vaccine_type = 2
+
+                if date_range['type'] == 'days':
+                    if date_range['value'] > len(data) - 2:
+                        date_range['value'] = len(data) - 2
+                    i = 0
+                    x = 0
+                    while x < date_range['value']:
+                        if data[int('-{}'.format(str(i + 1)))][0] == "" or data[int('-{}'.format(str(i + 1)))][0] == " ":
+                            i = i + 1
+                            continue
+                        x = x + 1
+                        if include_date is True:
+                            out.append([data[int('-{}'.format(str(i + 1)))][0],
+                                        str(int(data[int('-{}'.format(str(i + 1)))][vaccine_type]) -
+                                        int(data[int('-{}'.format(str(i + 2)))][vaccine_type]))])
+                        else:
+                            out.append(str(int(data[int('-{}'.format(str(i + 1)))][vaccine_type]) -
+                                       int(data[int('-{}'.format(str(i + 2)))][vaccine_type])))
+                        i = i + 1
+                elif date_range['type'] == 'all':
+                    for i in range(0, len(data) - 2):
+                        if include_date is True:
+                            out.append([data[int('-{}'.format(str(i + 1)))][0],
+                                        str(int(data[int('-{}'.format(str(i + 1)))][vaccine_type]) -
+                                        int(data[int('-{}'.format(str(i + 2)))][vaccine_type]))])
+                        else:
+                            out.append(str(int(data[int('-{}'.format(str(i + 1)))][vaccine_type]) -
+                                       int(data[int('-{}'.format(str(i + 2)))][vaccine_type])))
+                else:
+                    self.print(f"Unsupported date_range type in CovidParser.__get_aus_new_v3(date_range={date_range})")
+                    out_full['status'] = 'error'
+                    out_full['content'] = 'Unsupported date_range'
+                    return out_full
+                out_full['content'] = json.dumps(out)
+                return out_full
+
         else:
             self.print(f"Unsupported data_type in CovidParser.__get_aus_new_v3(data_type={data_type})")
             out_full['status'] = 'error'
